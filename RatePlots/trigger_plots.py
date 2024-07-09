@@ -95,6 +95,7 @@ parser.add_argument('--nbins', default=-1 , help='Number of max bins. Cannot wor
 parser.add_argument('--removeOutliers', default="0.01" , help='Percentile of data points that will excluded from the plots. This is necessary to remove the rates spikes from the plots.')
 parser.add_argument('--nobatch', action='store_const', const=True, default=False, help='Disable ROOT batch mode')
 parser.add_argument('--testing', action='store_const', const=True, default=False, help='Used for debugging/development')
+parser.add_argument('--intLumi', dest="intLumi", default="39", help='Integrated lumi to display on plots, in fb-1.')
 
 args = parser.parse_args()
 
@@ -113,11 +114,32 @@ print()
 print("Runs %d - %d"%(runMin,runMax))
 print("removeOutliers = %f (percentile)"%removeOutliers)
 print("refLumi = %f"%refLumi)
+print("intLumi = %s"%args.intLumi)
 print("batch = %s"%str(batch))
 print("testing = %s"%str(testing))
 print("###################")
 
 
+
+def createCMSlabel(topLeft_x_leftCMS=0.13,y_bottomCMS=0.81,topLeft_x_right=0.51,y_topCMS=0.86,label="CMS"):
+    CMSlabel = ROOT.TPaveLabel(topLeft_x_leftCMS,y_bottomCMS,topLeft_x_right,y_topCMS,label,"NDC")
+    CMSlabel.SetTextFont(62)
+    CMSlabel.SetTextSize(0.8)
+    CMSlabel.SetTextAlign(12)
+    CMSlabel.SetBorderSize(0)
+    CMSlabel.SetFillColor(0)
+    CMSlabel.SetFillStyle(0)
+    return CMSlabel
+
+def createHeaderLabel(header_x_left=0.53,y_bottom=0.88,header_x_right=0.88,y_top=0.93,HeaderText=args.intLumi+" fb^{-1} (13.6 TeV)"):
+    HeaderLabel = ROOT.TPaveLabel(header_x_left,y_bottom,header_x_right,y_top,HeaderText,"NDC")
+    HeaderLabel.SetTextAlign(32)
+    HeaderLabel.SetTextFont(42)
+    HeaderLabel.SetTextSize(0.697674)
+    HeaderLabel.SetBorderSize(0)
+    HeaderLabel.SetFillColor(0)
+    HeaderLabel.SetFillStyle(0)
+    return HeaderLabel
 
 ###################################################
 
@@ -528,12 +550,17 @@ for selFolder in selections:
                     if not useRate:
                         fit.SetRange(xsec_vsPU.GetXaxis().GetXmin(),xsec_vsPU.GetXaxis().GetXmax())
                         fit.Draw("same")
-                    leg.AddEntry(xsec_vs,trigger,legStyle) # or lep or f</verbatim>
+                    #leg.AddEntry(xsec_vs,trigger,legStyle) # or lep or f</verbatim>
                     xsec_vsPU.Draw("P") ##keep pileup_vs in backgroup
-                    leg.Draw()
+                    #leg.Draw()
+                    cmsLabel = createCMSlabel()
+                    headerLabel = createHeaderLabel()
+                    cmsLabel.Draw()
+                    headerLabel.Draw()
                     outputFile = outFolder+"/"+prefix+trigger+"_vsPU.root"
                     canv.SaveAs(outputFile)
                     canv.SaveAs(outputFile.replace(".root",".png"))
+                    canv.SaveAs(outputFile.replace(".root",".pdf"))
 
 #                del canv
 

@@ -545,7 +545,9 @@ for selFolder in selections:
                         xsec_vsPU.GetYaxis().SetTitle(ratesLabel)
                     else:
                         xsec_vsPU.GetYaxis().SetTitle(xsecLabel)
-                    xsec_vsPU.GetYaxis().SetRangeUser(xsec_vs.GetMinimum()*0.9,xsec_vs.GetMaximum()*1.1)
+                    #xsec_vsPU.GetYaxis().SetRangeUser(xsec_vs.GetMinimum()*0.9,xsec_vs.GetMaximum()*1.1)
+                    xsec_vsPU.GetXaxis().SetRangeUser(0,70)
+                    xsec_vsPU.GetYaxis().SetRangeUser(0,50)
                     xsec_vsPU.Draw("AP")
                     if not useRate:
                         fit.SetRange(xsec_vsPU.GetXaxis().GetXmin(),xsec_vsPU.GetXaxis().GetXmax())
